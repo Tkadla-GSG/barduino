@@ -1,5 +1,6 @@
 #include <Arduino.h>
 
+#include <time.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
@@ -26,14 +27,16 @@ const char MAIN_page[] PROGMEM = R"=====(
     </head>
     <body>
         <div id="root"></div>
-        <script type="text/javascript" src="https:\/\/tkadla-gsg.github.io\/barduino\/app\/build\/dist\/main.js"></script>
+        <script type="text/javascript" src="https:\/\/tkadla-gsg.github.io\/barduino\/app\/build\/dist\/main.js?v=_version_"></script>
     </body>
 </html>
 )=====";
 
 void handleRoot() {
-  String s = MAIN_page; //Read HTML contents
-  server.send(200, "text/html", s); //Send web page
+  String page = MAIN_page;
+  // cache bust
+  page.replace("_version_", String(random(999999999)));
+  server.send(200, "text/html", page);
 }
 
 /*
@@ -55,6 +58,7 @@ void sendMessage(String message) {
 void setup() {
   // setup hardware
   Serial.begin(115200);
+  randomSeed(analogRead(0));
   Serial.println();
 
   Serial.printf("Connecting to %s\n", WIFI_SSID);
