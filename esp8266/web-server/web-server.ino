@@ -7,8 +7,8 @@
 #include <WebSocketsClient.h>
 #include <ArduinoJson.h>
 
-#define WIFI_SSID           "Olympus"
-#define WIFI_PASSWORD       "standovoWIFIpassw0rd"
+#define WIFI_SSID           ""
+#define WIFI_PASSWORD       ""
 #define SERVER_PORT         80
 
 WebSocketsClient webSocket;
