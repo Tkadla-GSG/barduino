@@ -9,5 +9,5 @@ export const WEBSOCKET_SEND = WEBSOCKET_PREFIX + SEND;
 
 export const createWebsocketSendAction = payload => ({
     type: WEBSOCKET_SEND,
-    payload,//: JSON.stringify(payload),
+    payload: JSON.stringify(payload),
 })
