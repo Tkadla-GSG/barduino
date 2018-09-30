@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
+import Beverage from './components/Beverage';
 
 class App extends Component {
     render() {
         return (
             <div>
-                {'cache busted'}
+                <Beverage id="beer"/>
+                <Beverage id="mimosa"/>
+                <Beverage id="other"/>
             </div>
         );
     }

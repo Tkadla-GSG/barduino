@@ -1,6 +1,8 @@
 #include <Arduino.h>
 
 #include <time.h>
+#include <Hash.h>
+
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
@@ -8,8 +10,8 @@
 #include <WebSocketsClient.h>
 #include <ArduinoJson.h>
 
-#define WIFI_SSID           ""
-#define WIFI_PASSWORD       ""
+#define WIFI_SSID           "Ragnarok"
+#define WIFI_PASSWORD       "maninyWIFIPassw0rd"
 #define SERVER_PORT         80
 
 WebSocketsClient webSocket;
@@ -27,6 +29,11 @@ const char MAIN_page[] PROGMEM = R"=====(
     </head>
     <body>
         <div id="root"></div>
+        <script>
+            window.config = {
+                websocketEndpoint: "ws:\/\/_ip_",
+            };
+        </script>
         <script type="text/javascript" src="https:\/\/tkadla-gsg.github.io\/barduino\/app\/build\/dist\/main.js?v=_version_"></script>
     </body>
 </html>
@@ -36,6 +43,7 @@ void handleRoot() {
   String page = MAIN_page;
   // cache bust
   page.replace("_version_", String(random(999999999)));
+  page.replace("_ip_", WiFi.localIP().toString());
   server.send(200, "text/html", page);
 }
 
@@ -79,46 +87,21 @@ void setup() {
 
 void loop() {
   server.handleClient();
-  /*
   webSocket.loop();
-
-  if (connected) {
-    // Send ping every 5 seconds, to keep the connection alive
-    if (millis() - lastPing > 5000) {
-      sendPing();
-      lastPing = millis();
-    }
-  } else {
-    // Try to connect / reconnect to slack
-    connected = connectToSlack();
-    if (!connected) {
-      delay(500);
-    }
-  }
-  
-  delay(50);
-  */
 }
 
-/**
-  Called on each web socket event. Handles disconnection, and also
-  incoming messages from slack.
-*/
 void webSocketEvent(WStype_t type, uint8_t *payload, size_t len) {
   switch (type) {
     case WStype_DISCONNECTED:
-      Serial.printf("[WebSocket] Disconnected :-( \n");
+      Serial.printf("[WebSocket] Disconnected\n");
       break;
     
     case WStype_CONNECTED:
       Serial.printf("[WebSocket] Connected to: %s\n", payload);
-      // sendPing();
-      // TODO send status
       break;
 
     case WStype_TEXT:
       Serial.printf("[WebSocket] Message: %s\n", payload);
-      Serial.println("[WebSocket] Message received not implemented yet");
       break;
   }
 }
