@@ -9,7 +9,7 @@ import { logger } from 'redux-logger';
 import App from './App';
 import reducers from './reducers';
 
-const websocketMiddleware = createSocketMiddleware(window.config.websocketEndpoint || 'ws://echo.websocket.org');
+const websocketMiddleware = createSocketMiddleware((window.config && window.config.websocketEndpoint) || 'ws://echo.websocket.org');
 const middlewares = [
     thunkMiddleware,
     websocketMiddleware
