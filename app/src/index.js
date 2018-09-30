@@ -14,7 +14,8 @@ const middlewares = [
     thunkMiddleware,
     websocketMiddleware
 ];
-if (process.env.NODE_ENV === `development`) {
+// TODO enable condition for final build
+if (true && process.env.NODE_ENV === `development`) {
     middlewares.push(logger);
 }
 
