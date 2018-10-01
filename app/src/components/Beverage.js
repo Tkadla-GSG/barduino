@@ -7,16 +7,16 @@ class Beverage extends Component {
 
     render() {
         return (
-            <div onClick={this.handleClick}>
-                {'beverage '}{this.props.id}
-            </div>
+            <button onClick={this.handleClick}>
+                {this.props.title}
+            </button>
         );
     }
 }
 
 export default connect(
     undefined,
-    (dispatch,  {id }) => ({
+    (dispatch, { id }) => ({
         onClick: () => dispatch(brewBeverage(id)),
     })
 )(Beverage);
