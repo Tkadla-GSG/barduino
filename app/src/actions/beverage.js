@@ -1,3 +1,3 @@
 import { createWebsocketSendAction } from '../util';
 
-export const brewBeverage = id => dispatch => dispatch(createWebsocketSendAction({beverageId: id }));
+export const brewBeverage = id => dispatch => dispatch(createWebsocketSendAction({ command: 'brew', id }));

@@ -1,13 +1,4 @@
-/*
-  Stepper Motor Demonstration 4
-  Stepper-Demo4.ino
-  Demonstrates NEMA 17 Bipolar Stepper with A4988 Driver
- 
-  DroneBot Workshop 2018
-  https://dronebotworkshop.com
-*/
- 
-// Define Constants
+#include <../constants.h>
 
 #define ON      49
 #define OFF     50
@@ -19,8 +10,7 @@ const int stepPin = 3; // Step
 // Motor steps per rotation
 const int STEPS_PER_REV = 200;
 
-// for incoming serial data
-int incomingByte = 0;
+String incommingCommand;
  
 void setup() {
   // setup hardware
@@ -31,15 +21,13 @@ void setup() {
   pinMode(dirPin,OUTPUT);
 }
 void loop() {
-
-  // send data only when you receive data:
-  if (Serial.available() > 0) {
+  while(Serial.available()) {
       // read the incoming byte:
-      incomingByte = Serial.read();
+      incommingCommand = Serial.readStringUtil(COMMAND_SEPARATOR);
 
       // say what you got:
       Serial.print("I received: ");
-      Serial.println(incomingByte, DEC);
+      Serial.println(incommingCommand);
   }
   
   // Set motor direction clockwise
@@ -70,5 +58,5 @@ void loop() {
   }
   
   // Pause for one second
-  delay(1000);
+  delay(100);
 }

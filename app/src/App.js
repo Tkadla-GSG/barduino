@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import Beverage from './components/Beverage';
+import MotorControl from './components/MotorControl';
 
 class App extends Component {
     render() {
         return (
             <div>
-                <Beverage id="1" title="On"/>
-                <Beverage id="2" title="Off"/>
+                <MotorControl id="1" />
             </div>
         );
     }

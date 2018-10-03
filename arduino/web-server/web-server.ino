@@ -10,6 +10,8 @@
 
 #include <ArduinoJson.h>
 
+#include <../constants.h>
+
 #define WIFI_SSID           "Ragnarok"
 #define WIFI_PASSWORD       "maninyWIFIPassw0rd"
 #define SERVER_PORT         80
@@ -51,7 +53,7 @@ void handleRoot() {
   server.send(200, "text/html", page);
 }
 
-void sendStatus() {
+void broadcastStatus() {
   String json;
   DynamicJsonBuffer jsonBuffer;
   JsonObject& action = jsonBuffer.createObject();
@@ -71,17 +73,18 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t len) {
       break;
     
     case WStype_CONNECTED:
-      sendStatus();
+      broadcastStatus();
       break;
 
     case WStype_TEXT:
-      const size_t bufferSize = JSON_OBJECT_SIZE(1) + 20;
+      const size_t bufferSize = JSON_OBJECT_SIZE(1) + 40;
+      
       DynamicJsonBuffer jsonBuffer(bufferSize);
       JsonObject& root = jsonBuffer.parseObject(payload);
-      const char* beverageId = root["beverageId"];
+      const char* command = root["command"];
+      const char* id = root["id"];
 
-      // send command to controller
-      Serial.write((const uint8_t*)beverageId, 1);
+      Serial.printf(COMMAND_TEMPLATE, command, id);
       break;
   }
 }
