@@ -10,8 +10,6 @@
 
 #include <ArduinoJson.h>
 
-#include <../constants.h>
-
 #define WIFI_SSID           "Ragnarok"
 #define WIFI_PASSWORD       "maninyWIFIPassw0rd"
 #define SERVER_PORT         80
@@ -77,14 +75,10 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t len) {
       break;
 
     case WStype_TEXT:
-      const size_t bufferSize = JSON_OBJECT_SIZE(1) + 40;
-      
-      DynamicJsonBuffer jsonBuffer(bufferSize);
-      JsonObject& root = jsonBuffer.parseObject(payload);
-      const char* command = root["command"];
-      const char* id = root["id"];
-
-      Serial.printf(COMMAND_TEMPLATE, command, id);
+      char * str = (char *)payload;
+      memmove(str, str+1, len-2); // string quates form commnad
+      str[len-2] = 0;
+      Serial.println(str);
       break;
   }
 }
@@ -97,7 +91,6 @@ void setup() {
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
-    Serial.print(".");
   }
   
   server.on("/", handleRoot);
