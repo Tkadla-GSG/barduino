@@ -1,0 +1,1 @@
+export const controlsOpened = state => state.app.controlsOpened;
