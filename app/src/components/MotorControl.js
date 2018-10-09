@@ -15,7 +15,7 @@ class MotorControl extends Component {
     render() {
         return (
             <MotorControlWrapper>
-                {"MOTOR: "}{this.props.id}{" "}
+                {"MOTOR "}{this.props.id}{" "}
                 <button onClick={this.handleUnload}>
                     {"UNLOAD"}
                 </button>

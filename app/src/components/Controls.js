@@ -6,7 +6,7 @@ import { controlsOpened } from '../selectors/app';
 import MotorControl from './MotorControl';
 
 const HANDLE_HEIGHT = 48;
-const MAX_CONTENT_HEIGHT = 288;
+const MAX_CONTENT_HEIGHT = 312;
 const ControlsWrapper = styled.div`
     background: white;
     position: absolute;
