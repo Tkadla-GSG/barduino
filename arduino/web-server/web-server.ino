@@ -41,10 +41,9 @@ const char MAIN_page[] PROGMEM = R"=====(
         <script>
             window.config = {
                 websocketEndpoint: "ws:\/\/_ip_",
-                assetsEndpoint: "https:\/\/tkadla-gsg.github.io\/barduino\/app\/build\/dist",
             };
         </script>
-        <script type="text/javascript" src="https:\/\/tkadla-gsg.github.io\/barduino\/app\/build\/dist\/main.js?v=_version_"></script>
+        <script type="text/javascript" src="https:\/\/tkadla-gsg.github.io\/barduino\/app\/build\/static\/js\/main.js?v=_version_"></script>
     </body>
 </html>
 )=====";

@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { connect } from 'react-redux'
-import { openControls, closeControls } from '../actions/control';
+import { openControls, closeControls, motorOffAll } from '../actions/control';
 import { controlsOpened } from '../selectors/app';
 import MotorControl from './MotorControl';
 
-const HANDLE_HEIGHT = 48;
-const MAX_CONTENT_HEIGHT = 312;
+export const HANDLE_HEIGHT = 48;
+const MAX_CONTENT_HEIGHT = 340;
 const ControlsWrapper = styled.div`
     background: white;
     position: absolute;
@@ -42,6 +42,7 @@ const HandleElement = styled.div`
 class Controls extends Component {
     handleOpen = () => this.props.open();
     handleClose = () => this.props.close();
+    handleOffAll = () => this.props.offAll();
 
     render() {
         const { isOpened } = this.props;
@@ -55,6 +56,7 @@ class Controls extends Component {
                     {title}
                 </HandleElement>
                 <ControlsContent isOpened={isOpened}>
+                    <button onClick={this.handleOffAll}>{"Off all"}</button>
                     <MotorControl id="1" />
                     <MotorControl id="2" />
                     <MotorControl id="3" />
@@ -74,5 +76,6 @@ export default connect(
     dispatch => ({
         open: () => dispatch(openControls()),
         close: () => dispatch(closeControls()),
+        offAll: () => dispatch(motorOffAll()),
     })
 )(Controls);

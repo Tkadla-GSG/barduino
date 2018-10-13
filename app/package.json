@@ -1,5 +1,6 @@
 {
-  "name": "app",
+  "name": "barduino",
+  "homepage": "htttp://tkadla-gsg.github.io/barduino",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -19,6 +20,6 @@
     "build": "react-scripts build && yarn build:clean",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "build:clean": "cd build && mkdir dist && cp static/js/*.js dist/main.js && cp static/js/*.map dist/main.js.map"
+    "build:clean": "cd build && cp static/js/*.js static/js/main.js && cp static/js/*.map static/js/main.js.map"
   }
 }
