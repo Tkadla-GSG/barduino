@@ -3,10 +3,21 @@
 #include "SerialCommand.h"
 #include "AccelStepper.h"
 
+#define STATUS_BREWING            "brewing"
+#define STATUS_IDLE               "idle"
+
 #define COMMAND_BREW              "brew_"
 #define COMMAND_MOTOR_OFF         "off_"
 #define COMMAND_MOTOR_ON_LOAD     "load_"
 #define COMMAND_MOTOR_ON_UNLOAD   "unload_"
+#define COMMAND_MOTOR_ALL_OFF     "off_all"
+
+#define MOTOR_ID_1        "1"
+#define MOTOR_ID_2        "2"
+#define MOTOR_ID_3        "3"
+#define MOTOR_ID_4        "4"
+#define MOTOR_ID_5        "5"
+#define MOTOR_ID_6        "6"
 
 #define BREW_1            COMMAND_BREW "1"
 #define BREW_2            COMMAND_BREW "2"
@@ -14,27 +25,6 @@
 #define BREW_4            COMMAND_BREW "4"
 #define BREW_5            COMMAND_BREW "5"
 #define BREW_6            COMMAND_BREW "6"
-
-#define MOTOR_1_OFF       COMMAND_MOTOR_OFF "1"
-#define MOTOR_2_OFF       COMMAND_MOTOR_OFF "2"
-#define MOTOR_3_OFF       COMMAND_MOTOR_OFF "3"
-#define MOTOR_4_OFF       COMMAND_MOTOR_OFF "4"
-#define MOTOR_5_OFF       COMMAND_MOTOR_OFF "5"
-#define MOTOR_6_OFF       COMMAND_MOTOR_OFF "6"
-
-#define MOTOR_1_ON_LOAD   COMMAND_MOTOR_ON_LOAD "1"
-#define MOTOR_2_ON_LOAD   COMMAND_MOTOR_ON_LOAD "2"
-#define MOTOR_3_ON_LOAD   COMMAND_MOTOR_ON_LOAD "3"
-#define MOTOR_4_ON_LOAD   COMMAND_MOTOR_ON_LOAD "4"
-#define MOTOR_5_ON_LOAD   COMMAND_MOTOR_ON_LOAD "5"
-#define MOTOR_6_ON_LOAD   COMMAND_MOTOR_ON_LOAD "6"
-
-#define MOTOR_1_ON_UNLOAD  COMMAND_MOTOR_ON_UNLOAD "1"
-#define MOTOR_2_ON_UNLOAD  COMMAND_MOTOR_ON_UNLOAD "2"
-#define MOTOR_3_ON_UNLOAD  COMMAND_MOTOR_ON_UNLOAD "3"
-#define MOTOR_4_ON_UNLOAD  COMMAND_MOTOR_ON_UNLOAD "4"
-#define MOTOR_5_ON_UNLOAD  COMMAND_MOTOR_ON_UNLOAD "5"
-#define MOTOR_6_ON_UNLOAD  COMMAND_MOTOR_ON_UNLOAD "6"
 
 #define MOTOR_1_DIR_PIN           2
 #define MOTOR_1_STEP_PIN          3
@@ -49,8 +39,13 @@
 #define MOTOR_6_DIR_PIN           12
 #define MOTOR_6_STEP_PIN          13
 
-#define MOTOR_SPEED               1000
-#define MOTOR_ACCELERATION        1000
+#define MOTOR_SPEED               2000
+#define MOTOR_ACCELERATION        2000
+
+#define LOAD_DISTANCE             100000000
+#define UNLOAD_DISTANCE           -100000000
+
+bool isBrewing = false; 
 
 AccelStepper motor1(AccelStepper::FULL2WIRE, MOTOR_1_STEP_PIN, MOTOR_1_DIR_PIN);
 AccelStepper motor2(AccelStepper::FULL2WIRE, MOTOR_2_STEP_PIN, MOTOR_2_DIR_PIN);
@@ -61,44 +56,112 @@ AccelStepper motor6(AccelStepper::FULL2WIRE, MOTOR_6_STEP_PIN, MOTOR_6_DIR_PIN);
 
 SerialCommand sCmd;
 
+void setupMotor(AccelStepper motor) {
+  motor.setMaxSpeed(MOTOR_SPEED);
+  motor.setAcceleration(MOTOR_ACCELERATION);
+}
+
+void setupMotorCommand(const char* motorId, void* load, void* unload, void* off) {
+  sCmd.addCommand(strcat(COMMAND_MOTOR_ON_LOAD, motorId), load);
+  sCmd.addCommand(strcat(COMMAND_MOTOR_ON_UNLOAD, motorId), unload);
+  sCmd.addCommand(strcat(COMMAND_MOTOR_OFF, motorId), off);
+}
+
+void load1() { motor1.moveTo(LOAD_DISTANCE); };
+void unload1() { motor1.moveTo(UNLOAD_DISTANCE); };
+void off1() { motor1.stop(); };
+
+void load2() { motor2.moveTo(LOAD_DISTANCE); };
+void unload2() { motor2.moveTo(UNLOAD_DISTANCE); };
+void off2() { motor2.stop(); };
+
+void load3() { motor3.moveTo(LOAD_DISTANCE); };
+void unload3() { motor3.moveTo(UNLOAD_DISTANCE); };
+void off3() { motor3.stop(); };
+
+void load4() { motor4.moveTo(LOAD_DISTANCE); };
+void unload4() { motor4.moveTo(UNLOAD_DISTANCE); };
+void off4() { motor4.stop(); };
+
+void load5() { motor5.moveTo(LOAD_DISTANCE); };
+void unload5() { motor5.moveTo(UNLOAD_DISTANCE); };
+void off5() { motor5.stop(); };
+
+void load6() { motor6.moveTo(LOAD_DISTANCE); };
+void unload6() { motor6.moveTo(UNLOAD_DISTANCE); };
+void off6() { motor6.stop(); };
+
+void offAll() {
+  motor1.stop();
+  motor2.stop();
+  motor3.stop();
+  motor4.stop();
+  motor5.stop();
+  motor6.stop();
+}
+
+void brew1() {
+  motor1.moveTo(100);
+  motor2.moveTo(200);
+}
+
+void brew2() {
+}
+
+void brew3() {
+}
+
+void brew4() {
+}
+
+void brew5() {
+}
+
+void brew6() {
+}
+
 void unrecognizedCommand(const char *command) {
   Serial.println("command no recognized");
   Serial.println(command);
 }
-void motor1Load() {
-  Serial.println("load");
-  motor1.moveTo(100000000);
-}
-void motor1Unload() {
-  Serial.println("unload");
-  motor1.moveTo(-100000000);
-}
-void motor1Off() {
-  Serial.println("off");
-  motor1.stop();
+
+bool anyIsRunning() {
+  return
+    motor1.isRunning() ||
+    motor2.isRunning() ||
+    motor3.isRunning() ||
+    motor4.isRunning() ||
+    motor5.isRunning() ||
+    motor6.isRunning();
 }
  
 void setup() {
   // setup hardware
   Serial.begin(115200);
-  motor1.setMaxSpeed(MOTOR_SPEED);
-  motor1.setAcceleration(MOTOR_ACCELERATION);
-  motor2.setMaxSpeed(MOTOR_SPEED);
-  motor2.setAcceleration(MOTOR_ACCELERATION);
-  motor3.setMaxSpeed(MOTOR_SPEED);
-  motor3.setAcceleration(MOTOR_ACCELERATION);
-  motor4.setMaxSpeed(MOTOR_SPEED);
-  motor4.setAcceleration(MOTOR_ACCELERATION);
-  motor5.setMaxSpeed(MOTOR_SPEED);
-  motor5.setAcceleration(MOTOR_ACCELERATION);
-  motor6.setMaxSpeed(MOTOR_SPEED);
-  motor6.setAcceleration(MOTOR_ACCELERATION);
+  setupMotor(motor1);
+  setupMotor(motor2);
+  setupMotor(motor3);
+  setupMotor(motor4);
+  setupMotor(motor5);
+  setupMotor(motor6);
 
-  sCmd.addCommand(MOTOR_1_ON_LOAD, motor1Load);
-  sCmd.addCommand(MOTOR_1_ON_UNLOAD, motor1Unload);
-  sCmd.addCommand(MOTOR_1_OFF, motor1Off);
-  sCmd.setDefaultHandler(unrecognizedCommand);
+  setupMotorCommand((const char*)MOTOR_ID_1, load1, unload1, off1);
+  setupMotorCommand((const char*)MOTOR_ID_2, load2, unload2, off2);
+  setupMotorCommand((const char*)MOTOR_ID_3, load3, unload3, off3);
+  setupMotorCommand((const char*)MOTOR_ID_4, load4, unload4, off4);
+  setupMotorCommand((const char*)MOTOR_ID_5, load5, unload5, off5);
+  setupMotorCommand((const char*)MOTOR_ID_6, load6, unload6, off6);
+
+  sCmd.addCommand(BREW_1, brew1);
+  sCmd.addCommand(BREW_2, brew2);
+  sCmd.addCommand(BREW_3, brew3);
+  sCmd.addCommand(BREW_4, brew4);
+  sCmd.addCommand(BREW_5, brew5);
+  sCmd.addCommand(BREW_6, brew6);
+
+  sCmd.addCommand(COMMAND_MOTOR_ALL_OFF, offAll);
 }
+
 void loop() {
   sCmd.readSerial();
 
@@ -108,4 +171,10 @@ void loop() {
   motor4.run();
   motor5.run();
   motor6.run();
+
+  bool motorsRunning = anyIsRunning();
+  if (motorsRunning != isBrewing) {
+    isBrewing = motorsRunning;
+    Serial.println(isBrewing ? STATUS_BREWING : STATUS_IDLE);
+  }
 }

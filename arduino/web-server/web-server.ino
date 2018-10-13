@@ -8,6 +8,7 @@
 #include <ESP8266WebServer.h>
 #include <WebSocketsServer.h>
 
+#include "SerialCommand.h"
 #include <ArduinoJson.h>
 
 #define WIFI_SSID           "Ragnarok"
@@ -15,10 +16,17 @@
 #define SERVER_PORT         80
 #define WEBSOCKET_PORT      81
 
+#define STATUS_BREWING            "brewing"
+#define STATUS_IDLE               "idle"
+
+bool isBrewing = false;
+
 // HTTP Server http://local_ip:80
 ESP8266WebServer server(SERVER_PORT);
 // Websocket Server ws://local_ip:81
 WebSocketsServer webSocketServer(WEBSOCKET_PORT);
+
+SerialCommand sCmd;
 
 const char MAIN_page[] PROGMEM = R"=====(
 <!doctype html>
@@ -33,6 +41,7 @@ const char MAIN_page[] PROGMEM = R"=====(
         <script>
             window.config = {
                 websocketEndpoint: "ws:\/\/_ip_",
+                assetsEndpoint: "https:\/\/tkadla-gsg.github.io\/barduino\/app\/build\/dist",
             };
         </script>
         <script type="text/javascript" src="https:\/\/tkadla-gsg.github.io\/barduino\/app\/build\/dist\/main.js?v=_version_"></script>
@@ -58,8 +67,7 @@ void broadcastStatus() {
   JsonObject& payload = action.createNestedObject("payload");
   
   action["type"] = "SERVER_STATUS";
-  payload["queueLength"] = 0;
-  payload["brewing"] = "false";
+  payload["brewing"] = isBrewing;
   
   action.printTo(json);
   webSocketServer.broadcastTXT(json);
@@ -83,6 +91,21 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t len) {
   }
 }
 
+void notifyBrewing() {
+  isBrewing = true;
+  broadcastStatus();
+}
+
+void notifyIdle() {
+  isBrewing = false;
+  broadcastStatus();
+}
+
+void unrecognizedCommand(const char *command) {
+  Serial.println("command no recognized");
+  Serial.println(command);
+}
+
 void setup() {
   // setup hardware
   Serial.begin(115200);
@@ -97,10 +120,16 @@ void setup() {
   server.begin();
 
   webSocketServer.begin();                          
-  webSocketServer.onEvent(webSocketEvent);          
+  webSocketServer.onEvent(webSocketEvent);   
+
+  sCmd.addCommand(STATUS_BREWING, notifyBrewing);
+  sCmd.addCommand(STATUS_IDLE, notifyIdle);
+
+  sCmd.setDefaultHandler(unrecognizedCommand);
 }
 
 void loop() {
+  sCmd.readSerial();
   server.handleClient();
   webSocketServer.loop();
 }
