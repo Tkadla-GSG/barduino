@@ -121,8 +121,6 @@ void brew6() {
 }
 
 void unrecognizedCommand(const char *command) {
-  Serial.println("command no recognized");
-  Serial.println(command);
 }
 
 bool anyIsRunning() {

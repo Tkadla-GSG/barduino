@@ -101,8 +101,6 @@ void notifyIdle() {
 }
 
 void unrecognizedCommand(const char *command) {
-  Serial.println("command no recognized");
-  Serial.println(command);
 }
 
 void setup() {
