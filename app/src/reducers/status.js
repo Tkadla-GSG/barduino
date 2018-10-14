@@ -1,6 +1,6 @@
 import { WEBSOCKET_MESSAGE } from "../util";
 
-const status = (state = {}, action) => {
+const status = (state = { isBrewing: false }, action) => {
     switch (action.type) {
         case WEBSOCKET_MESSAGE:
             return ({

@@ -1,6 +1,6 @@
 {
   "name": "barduino",
-  "homepage": "htttp://tkadla-gsg.github.io/barduino/app/build",
+  "homepage": "http://tkadla-gsg.github.io/barduino/app/build",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

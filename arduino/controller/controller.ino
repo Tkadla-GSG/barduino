@@ -160,6 +160,8 @@ void setup() {
   sCmd.addCommand(BREW_6, brew6);
 
   sCmd.addCommand(COMMAND_MOTOR_ALL_OFF, offAll);
+
+  sCmd.setDefaultHandler(unrecognizedCommand);
 }
 
 void loop() {

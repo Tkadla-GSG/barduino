@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import { connect } from 'react-redux'
 import Beverage from './components/Beverage';
+import Loader from './components/Loader';
 import Controls, { HANDLE_HEIGHT } from './components/Controls';
 import WhiteRussian from './assets/white-russian.jpg';
+import { isBrewing } from './selectors/status';
 
 const GAP = '32px';
 const AppWrapper = styled.div`
@@ -24,10 +27,25 @@ const BeverageGrid = styled.div`
     margin: ${GAP};
 `;
 
+const OverlayElement = styled.div`
+    background: rgba(255, 255, 255, 0.6);
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`;
+
 class App extends Component {
     render() {
         return (
             <AppWrapper>
+                {this.props.isBrewing && (
+                    <OverlayElement>
+                        <Loader />
+                    </OverlayElement>
+                )}
                 <BeverageWrapper>
                     <BeverageGrid>
                         <Beverage id="1" title="white russian" imageUrl={WhiteRussian} />
@@ -44,4 +62,8 @@ class App extends Component {
     }
 }
 
-export default App;
+export default connect(
+    state => ({
+        isBrewing: isBrewing(state),
+    })
+)(App);
