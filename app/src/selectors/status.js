@@ -1,1 +1,1 @@
-export const isBrewing = state => state.status.isBrewing;
+export const isBrewing = state => state.status.brewing;

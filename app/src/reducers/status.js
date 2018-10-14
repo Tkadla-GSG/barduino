@@ -1,6 +1,6 @@
 const SERVER_STATUS_RECEIVED = "SERVER_STATUS";
 
-const status = (state = { isBrewing: false }, action) => {
+const status = (state = { brewing: false }, action) => {
     switch (action.type) {
         case SERVER_STATUS_RECEIVED:
             return ({
